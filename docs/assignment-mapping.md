@@ -6,7 +6,7 @@ Updated at every milestone. Status: planned / in progress / done.
 |---|---|---|
 | Pipeline | GitHub Actions: lint + test -> build -> push -> deploy | planned |
 | Continuous Integration | ruff + pytest on every push / PR | planned (tests exist locally) |
-| Automated testing | pytest: parser (fixtures), HTTP client (MockTransport), later API (TestClient) | in progress |
+| Automated testing | 30 pytest tests: parser, HTTP client (MockTransport), repository, index, API (TestClient); 1 opt-in Cosmos integration test | done |
 | Containerization | Multi-stage Dockerfile; Docker Compose for local dev | planned |
 | Container registry | GitHub Container Registry, images tagged by git SHA | planned |
 | Continuous Deployment | `az containerapp update` from Actions on `main` | planned |

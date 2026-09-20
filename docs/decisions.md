@@ -67,3 +67,15 @@ veto an owner. Sweden Central is the closest allowed region to Finland. Discover
 The Cosmos SDK logs every request + headers at INFO (2.6 MB for one collection run).
 `logging_setup.configure_logging` pins `azure`, `httpx`, `httpcore` to WARNING. Observed
 cost per run: ~1024 requests, ~10 RU per observation upsert + ~2 RU per station patch.
+
+## D13 - Index: explainable penalties, max-not-sum for surface, null on missing data
+See docs/index.md. The API returns the applied factors with every score so the UI (and the
+report) can explain any number. Road condition code and friction both describe grip, so the
+larger penalty wins rather than double counting. Sensor fault (KELI code 0) is treated as
+"no data", not as a penalty - a bug we would otherwise have shipped (station 1005).
+
+## D14 - API is read-only; dependency injection for storage
+The API only reads (`list_*`); the collector is the only writer. `Depends(get_repo)` supplies
+the Repository, and tests override it with InMemoryRepository, so the full HTTP layer is tested
+offline. Response models (api/schemas.py) are separate from internal dataclasses so the public
+contract can evolve independently.
