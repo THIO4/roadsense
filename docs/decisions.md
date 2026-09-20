@@ -55,3 +55,15 @@ identity + Entra RBAC, which removes the secret entirely.
 `infra/azure-setup.sh` creates every Azure resource with the `az` CLI, so the setup is
 reproducible and reviewable. Full IaC (Bicep/Terraform) would be the production answer but
 is out of scope for the course.
+
+## D11 - Region: swedencentral (forced by Azure Policy)
+The first deployment to northeurope failed with `RequestDisallowedByAzure`: Azure for
+Students subscriptions carry a policy (`sys.regionrestriction`) allowing only belgiumcentral,
+swedencentral, denmarkeast, switzerlandnorth and austriaeast. Policy sits above IAM - it can
+veto an owner. Sweden Central is the closest allowed region to Finland. Discovered with
+`az policy assignment list --disable-scope-strict-match`.
+
+## D12 - Quiet library loggers
+The Cosmos SDK logs every request + headers at INFO (2.6 MB for one collection run).
+`logging_setup.configure_logging` pins `azure`, `httpx`, `httpcore` to WARNING. Observed
+cost per run: ~1024 requests, ~10 RU per observation upsert + ~2 RU per station patch.

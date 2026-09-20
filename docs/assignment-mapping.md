@@ -10,10 +10,10 @@ Updated at every milestone. Status: planned / in progress / done.
 | Containerization | Multi-stage Dockerfile; Docker Compose for local dev | planned |
 | Container registry | GitHub Container Registry, images tagged by git SHA | planned |
 | Continuous Deployment | `az containerapp update` from Actions on `main` | planned |
-| Cloud client / SDK | `azure-cosmos` SDK in `db/cosmos.py` (collector + API); `az` CLI in `infra/` and pipeline | in progress |
-| Cloud database | Azure Cosmos DB (NoSQL, free tier): `stations`, `observations` (D7) | in progress |
+| Cloud client / SDK | `azure-cosmos` SDK in `db/cosmos.py` (collector + API); `az` CLI in `infra/` and pipeline | done (collector) |
+| Cloud database | Azure Cosmos DB (NoSQL, free tier): `stations`, `observations` (D7), live in swedencentral | done |
 | Environment variables | `pydantic-settings`, `.env.example`, Container Apps env | done (config.py) |
-| Infrastructure as code | `infra/azure-setup.sh` (az CLI, idempotent) | in progress |
+| Infrastructure as code | `infra/azure-setup.sh` (az CLI, idempotent) | done (database) |
 | Secrets | GitHub OIDC -> Azure (no stored password); Cosmos key as Container Apps secret | planned |
 | IAM | Service principal / federated identity with least privilege | planned |
 | Scheduling | Container Apps Job with cron trigger | planned |

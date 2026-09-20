@@ -17,6 +17,7 @@ from roadsense.collector.run import collect_once, seed_stations
 from roadsense.config import get_settings
 from roadsense.db import get_repository
 from roadsense.db.repository import InMemoryRepository
+from roadsense.logging_setup import configure_logging
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,9 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     settings = get_settings()
-    logging.basicConfig(
-        level=settings.log_level, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
-    )
+    configure_logging(settings.log_level)
     log = logging.getLogger("roadsense.collector")
 
     repo = InMemoryRepository() if args.dry_run else get_repository(settings)
