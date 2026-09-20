@@ -31,3 +31,27 @@ SADE_INTENSITEETTI (precipitation), NÄKYVYYS_M (visibility), KESKITUULI (wind),
 ## D6 - Tests never touch the network
 Parser tests use JSON fixtures captured from the real API; client tests use
 `httpx.MockTransport`. CI must be deterministic - a red build must always mean *our* bug.
+
+## D7 - Cosmos data model: `latest` embedded in the station document
+Containers: `stations` (pk `/id`, station metadata + `latest` observation) and
+`observations` (pk `/station_id`, 7-day TTL history). The UI's main query - "all stations in
+province X with current conditions" - becomes a single query on `stations`. The cost is one
+extra patch per observation on write, which is cheap. Observation `id` is
+`"<station_id>:<measured_at>"`, so upserts of unchanged data are no-ops and the collector is
+idempotent. Filtering by province is cross-partition; at ~530 documents that costs a few RU.
+
+## D8 - Repository abstraction; no local Cosmos emulator
+`db/repository.py` defines the storage interface; `InMemoryRepository` backs unit tests and
+`--dry-run`, `CosmosRepository` is the only cloud-specific module. The Cosmos emulator is
+x86-only (the Mac is arm64), and the real free-tier account costs nothing, so local
+development uses the real cloud database.
+
+## D9 - Authentication to Cosmos: account key as a secret (for now)
+The key is read from `COSMOS_KEY` (never defaulted, never committed; `SecretStr` keeps it out
+of logs). In Azure it becomes a Container Apps secret. Upgrade path, if time permits: managed
+identity + Entra RBAC, which removes the secret entirely.
+
+## D10 - Infrastructure as a script
+`infra/azure-setup.sh` creates every Azure resource with the `az` CLI, so the setup is
+reproducible and reviewable. Full IaC (Bicep/Terraform) would be the production answer but
+is out of scope for the course.

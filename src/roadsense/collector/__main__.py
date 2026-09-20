@@ -1,45 +1,55 @@
-"""Run the collector once: fetch the bulk payload and parse it.
+"""Collector command line.
 
-    python -m roadsense.collector
+    python -m roadsense.collector seed              # once: station metadata + province
+    python -m roadsense.collector collect           # every N minutes (scheduled job)
+    python -m roadsense.collector collect --dry-run # no cloud: fetch + parse only
 
-Step 3 will add "store to database". Keeping the run-once shape is deliberate:
-in the cloud a scheduler starts this process every N minutes and it exits when done.
+Run-once shape on purpose: in Azure a cron trigger starts this process and it
+exits when done. Exit code != 0 marks the run as failed for the scheduler.
 """
 
+import argparse
 import logging
 import sys
 
 from roadsense.collector.digitraffic import DigitrafficClient, DigitrafficError
-from roadsense.collector.parser import parse_all_data
+from roadsense.collector.run import collect_once, seed_stations
 from roadsense.config import get_settings
+from roadsense.db import get_repository
+from roadsense.db.repository import InMemoryRepository
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="roadsense.collector")
+    parser.add_argument("command", choices=["seed", "collect"])
+    parser.add_argument("--dry-run", action="store_true", help="do not write to the database")
+    args = parser.parse_args(argv)
+
     settings = get_settings()
     logging.basicConfig(
-        level=settings.log_level,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        level=settings.log_level, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )
     log = logging.getLogger("roadsense.collector")
 
+    repo = InMemoryRepository() if args.dry_run else get_repository(settings)
+    if not args.dry_run and isinstance(repo, InMemoryRepository):
+        # Fail loudly: a scheduled run that silently stores nothing is worse than a crash.
+        log.error("COSMOS_ENDPOINT / COSMOS_KEY not set (use --dry-run to run without a database)")
+        return 2
+
     try:
         with DigitrafficClient(settings.digitraffic_base_url, settings.digitraffic_user) as client:
-            payload = client.fetch_all_data()
+            if args.command == "seed":
+                seed_stations(client, repo)
+            else:
+                collect_once(client, repo)
     except DigitrafficError:
-        log.exception("collection failed")
-        return 1  # non-zero exit code: the scheduler/CI will see this run as failed
+        log.exception("%s failed", args.command)
+        return 1
 
-    observations = parse_all_data(payload)
-    for obs in observations[:5]:
-        log.info(
-            "station=%s at=%s air=%s°C road=%s°C condition=%s friction=%s",
-            obs.station_id,
-            obs.measured_at,
-            obs.air_temp_c,
-            obs.road_temp_c,
-            obs.road_condition,
-            obs.friction,
-        )
+    if args.dry_run:
+        for status in repo.list_latest()[:5]:
+            log.info("dry-run sample: %s", status.latest)
     return 0
 
 

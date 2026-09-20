@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.27",             # HTTP client for Digitraffic (sync + async, built-in gzip, timeouts)
     "pydantic-settings>=2.4",  # typed configuration from environment variables / .env
+    "azure-cosmos>=4.9",       # Azure Cosmos DB SDK - the "cloud client"
 ]
 
 [project.optional-dependencies]

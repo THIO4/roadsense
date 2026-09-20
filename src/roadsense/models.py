@@ -37,3 +37,11 @@ class Observation:
     visibility_m: float | None = None
     wind_avg_ms: float | None = None
     warning_code: int | None = None  # VAROITUS_1, 0 = OK
+
+
+@dataclass(frozen=True)
+class StationStatus:
+    """A station together with its most recent observation (None if never collected)."""
+
+    station: Station
+    latest: Observation | None
