@@ -1,0 +1,32 @@
+:root {
+  --bg: #fafaf9; --fg: #1a1a19; --muted: #6b6b68; --line: #e2e2df; --tile: #ffffff;
+  /* status palette: colour never carries meaning alone - the band word is always shown */
+  --good: #0ca30c; --fair: #fab219; --poor: #ec835a; --hazardous: #d03b3b; --unknown: #9a9a97;
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px; font: 14px/1.4 system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--fg); }
+header h1 { margin: 0 0 4px; font-size: 22px; }
+.sub, .muted { color: var(--muted); }
+a { color: inherit; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+select, button { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--tile); }
+button { cursor: pointer; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.tile { background: var(--tile); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.tile .k { font-size: 22px; font-weight: 600; }
+.tile .l { color: var(--muted); font-size: 12px; }
+.content { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .content { grid-template-columns: 1fr; } }
+#map { height: 520px; border: 1px solid var(--line); border-radius: 8px; }
+.table-wrap { overflow: auto; max-height: 520px; border: 1px solid var(--line); border-radius: 8px; background: var(--tile); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--tile); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.why { white-space: normal; min-width: 180px; }  /* the only column allowed to wrap */
+.band { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 12px; font-weight: 600; color: #fff; }
+.band.good { background: var(--good); } .band.fair { background: var(--fair); color: #1a1a19; }
+.band.poor { background: var(--poor); color: #1a1a19; } .band.hazardous { background: var(--hazardous); }
+.band.unknown { background: var(--unknown); }
+.why { color: var(--muted); font-size: 12px; }
+footer { margin-top: 16px; font-size: 12px; }

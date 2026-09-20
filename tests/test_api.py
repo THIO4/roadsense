@@ -82,3 +82,9 @@ def test_conditions_station_without_data_is_unknown(client):
 
 def test_unknown_province_is_404(client):
     assert client.get("/conditions", params={"province": "Atlantis"}).status_code == 404
+
+
+def test_frontend_is_served(client):
+    r = client.get("/")
+    assert r.status_code == 200 and "RoadSense Finland" in r.text
+    assert client.get("/static/app.js").status_code == 200

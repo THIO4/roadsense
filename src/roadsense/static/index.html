@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoadSense Finland</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>RoadSense Finland</h1>
+    <p class="sub">Road weather from <a href="https://www.digitraffic.fi/en/road-traffic/" target="_blank" rel="noopener">Digitraffic</a>
+      and an <a href="https://github.com/" id="docs-link">educational driving conditions index</a> &mdash; not an official safety rating.</p>
+  </header>
+
+  <section class="controls">
+    <label for="province">Area</label>
+    <select id="province"><option value="">Loading…</option></select>
+    <button id="refresh" type="button">Refresh</button>
+    <span id="status" class="muted"></span>
+  </section>
+
+  <section class="summary" id="summary" hidden>
+    <div class="tile"><div class="k" id="s-count">–</div><div class="l">stations</div></div>
+    <div class="tile"><div class="k" id="s-avg">–</div><div class="l">average index</div></div>
+    <div class="tile"><div class="k" id="s-worst">–</div><div class="l">lowest index</div></div>
+    <div class="tile"><div class="k" id="s-updated">–</div><div class="l">latest observation</div></div>
+  </section>
+
+  <section class="content">
+    <div id="map" aria-label="Map of stations"></div>
+    <div class="table-wrap">
+      <table id="stations">
+        <thead>
+          <tr><th>Station</th><th>Municipality</th><th>Index</th><th>Road</th><th>Air °C</th><th>Road °C</th><th>Why</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="muted">
+    Index bands: <span class="band good">good ≥80</span> · <span class="band fair">fair 60–79</span> ·
+    <span class="band poor">poor 40–59</span> · <span class="band hazardous">hazardous &lt;40</span> ·
+    <span class="band unknown">unknown</span>. Data © Fintraffic / Digitraffic (CC BY 4.0). Map © OpenStreetMap contributors.
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

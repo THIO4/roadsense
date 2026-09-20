@@ -79,3 +79,10 @@ The API only reads (`list_*`); the collector is the only writer. `Depends(get_re
 the Repository, and tests override it with InMemoryRepository, so the full HTTP layer is tested
 offline. Response models (api/schemas.py) are separate from internal dataclasses so the public
 contract can evolve independently.
+
+## D15 - Frontend: static files served by FastAPI, no framework, no build
+Plain HTML/CSS/JS in `src/roadsense/static/`, mounted at `/static`, `index.html` at `/`.
+One container and one URL; same origin as the API so no CORS. Leaflet + OpenStreetMap tiles
+(free, no key) for the map. Status colours from an accessibility-checked palette, and the band
+*word* is always shown next to the score - colour never carries meaning alone. Package data is
+declared in pyproject so the files ship inside the installed package (and the Docker image).

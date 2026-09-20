@@ -51,6 +51,7 @@ src/roadsense/
   api/
     app.py             FastAPI endpoints: /health /provinces /stations /conditions
     schemas.py         response models (public API contract)
+  static/              frontend: index.html, app.js, style.css (served at /)
 infra/                 azure-setup.sh - creates the cloud resources with the az CLI
 tests/                 pytest; fixtures/ holds real API samples so tests never hit the network
 docs/                  decisions, assignment mapping, cleanup checklist

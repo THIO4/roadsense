@@ -9,9 +9,12 @@ means it needs no write permissions - and a bug here can never corrupt data.
 import logging
 from collections.abc import Iterator
 from functools import lru_cache
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from roadsense.api.schemas import (
     ConditionsOut,
@@ -49,6 +52,16 @@ app = FastAPI(
     "conditions index. Not an official safety metric.",
 )
 configure_logging(get_settings().log_level)
+
+# Frontend: plain HTML/CSS/JS shipped inside the package and served by the same app.
+# Same origin as the API -> no CORS configuration, one container, one URL.
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def index() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
 
 
 @app.get("/health")
