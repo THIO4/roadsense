@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets / local config - NEVER commit these
+.env
+*.local
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

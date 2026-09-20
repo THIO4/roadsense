@@ -1,0 +1,148 @@
+{
+  "dataUpdatedTime": "2026-09-20T13:56:49Z",
+  "stations": [
+    {
+      "id": 1001,
+      "dataUpdatedTime": "2026-09-20T13:55:49Z",
+      "sensorValues": [
+        {
+          "id": 1,
+          "name": "ILMA",
+          "value": 14.9,
+          "unit": "°C",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 3,
+          "name": "TIE_1",
+          "value": 18.5,
+          "unit": "°C",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 7,
+          "name": "MAA_1",
+          "value": 18.6,
+          "unit": "°C",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 16,
+          "name": "KESKITUULI",
+          "value": 1.3,
+          "unit": "m/s",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 23,
+          "name": "SADE_INTENSITEETTI",
+          "value": 0.0,
+          "unit": "mm/h",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 27,
+          "name": "KELI_1",
+          "value": 1.0,
+          "unit": "***",
+          "sensorValueDescriptionEn": "Dry"
+        },
+        {
+          "id": 29,
+          "name": "VAROITUS_1",
+          "value": 0.0,
+          "unit": "???",
+          "sensorValueDescriptionEn": "OK"
+        },
+        {
+          "id": 58,
+          "name": "NÄKYVYYS_M",
+          "value": 20000.0,
+          "unit": "m",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 176,
+          "name": "KITKA1",
+          "value": 0.82,
+          "unit": "µ",
+          "sensorValueDescriptionEn": null
+        }
+      ]
+    },
+    {
+      "id": 1002,
+      "dataUpdatedTime": "2026-09-20T13:56:49Z",
+      "sensorValues": [
+        {
+          "id": 1,
+          "name": "ILMA",
+          "value": 15.1,
+          "unit": "°C",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 3,
+          "name": "TIE_1",
+          "value": 20.3,
+          "unit": "°C",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 7,
+          "name": "MAA_1",
+          "value": 19.6,
+          "unit": "°C",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 16,
+          "name": "KESKITUULI",
+          "value": 7.4,
+          "unit": "m/s",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 23,
+          "name": "SADE_INTENSITEETTI",
+          "value": 0.0,
+          "unit": "mm/h",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 27,
+          "name": "KELI_1",
+          "value": 1.0,
+          "unit": "***",
+          "sensorValueDescriptionEn": "Dry"
+        },
+        {
+          "id": 29,
+          "name": "VAROITUS_1",
+          "value": 0.0,
+          "unit": "???",
+          "sensorValueDescriptionEn": "OK"
+        },
+        {
+          "id": 58,
+          "name": "NÄKYVYYS_M",
+          "value": 20000.0,
+          "unit": "m",
+          "sensorValueDescriptionEn": null
+        },
+        {
+          "id": 176,
+          "name": "KITKA1",
+          "value": 0.82,
+          "unit": "µ",
+          "sensorValueDescriptionEn": null
+        }
+      ]
+    },
+    {
+      "id": 9999,
+      "dataUpdatedTime": "2026-09-20T14:00:00Z",
+      "sensorValues": []
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "roadsense"
+version = "0.1.0"
+description = "RoadSense Finland - road weather observations and a driving conditions index (Cloud Engineering course project)"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",             # HTTP client for Digitraffic (sync + async, built-in gzip, timeouts)
+    "pydantic-settings>=2.4",  # typed configuration from environment variables / .env
+]
+
+[project.optional-dependencies]
+# Dev-only tools. Installed with:  pip install -e ".[dev]"
+# They are NOT installed in the production Docker image.
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# E/F = pycodestyle + pyflakes (defaults), I = import sorting, UP = modern-syntax upgrades, B = common bugs
+select = ["E", "F", "I", "UP", "B"]
