@@ -8,7 +8,8 @@ set -euo pipefail
 
 # --- names: change these once, everything else derives from them ---
 RG="rg-roadsense"
-LOCATION="northeurope"                 # Ireland: closest region with all services enabled
+LOCATION="swedencentral"               # Azure Policy on student subscriptions allows only 5 regions;
+                                       # check: az policy assignment list --disable-scope-strict-match
 COSMOS_ACCOUNT="cosmos-roadsense-$(az account show --query id -o tsv | cut -c1-8)"  # must be globally unique
 DATABASE="roadsense"
 
