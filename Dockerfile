@@ -22,6 +22,9 @@ RUN pip install --no-cache-dir --no-deps --prefix=/install .
 # ---------- stage 2: runtime --------------------------------------------------------
 FROM python:3.12-slim AS runtime
 
+# Links the image to the repo on GHCR (package page, README, and automatic repo write access).
+LABEL org.opencontainers.image.source="https://github.com/THIO4/roadsense"
+
 # Python: no .pyc files, unbuffered stdout so logs appear immediately in the container log.
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
