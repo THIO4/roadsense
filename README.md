@@ -17,6 +17,8 @@ Digitraffic API -> Azure Container Apps Job (collector, cron) -> Azure Cosmos DB
 GitHub -> GitHub Actions (ruff + pytest -> docker build -> GHCR -> az containerapp update)
 ```
 
+**Live:** https://roadsense-api.gentlebush-f249f038.swedencentral.azurecontainerapps.io
+
 See `docs/` for architecture decisions, the assignment-concept mapping and cleanup steps.
 
 ## Local development

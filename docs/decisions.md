@@ -100,3 +100,29 @@ runs 3.14 - the image, not the host, decides the runtime.
 `compose.yaml` runs the API with `.env` and exposes a `collector` service under the `tools`
 profile for on-demand runs. There is no local database service (see D8); both services talk
 to the free-tier Cosmos account. Compose is a developer convenience, not used in Azure.
+
+## D18 - Deployment target: Azure Container Apps (consumption, scale to zero)
+API = Container App (`roadsense-api`, external HTTPS ingress, 0.25 vCPU / 0.5 GiB,
+min 0 / max 1 replicas). Collector = Container Apps Job (`roadsense-collector`, cron
+`*/30 * * * *`, same image, command `roadsense-collector collect`). Both in environment
+`cae-roadsense`. Free consumption grant (180k vCPU-s, 2M requests/month) covers this; the
+API bills nothing while idle. First-time deploy is `infra/azure-deploy.sh <tag>`.
+
+## D19 - Environment mode must be WorkloadProfiles
+The preview containerapp CLI extension (1.3.0b5) creates "Express" environments by default,
+which do not support Jobs (`ExpressEnvironmentResourceNotSupported`). Recreated with
+`--environment-mode WorkloadProfiles`. Tearing down and recreating from the script took
+~5 minutes and proved the deployment is reproducible.
+
+## D20 - Images: GHCR, public package, tagged by git SHA, built for linux/amd64
+Every image is tagged with the short commit SHA (`ghcr.io/thio4/roadsense:<sha>`) so a
+running container can always be traced to exact source; `latest` is a convenience alias.
+The package is public so Azure pulls anonymously (source is public anyway; the image holds
+no secrets). The laptop is arm64 but Azure is amd64: local pushes use
+`docker buildx build --platform linux/amd64`; CI runners are amd64 natively.
+
+## D21 - Secrets in Azure: Container Apps secret + secretref
+The Cosmos key is read from Azure at deploy time and stored as the Container Apps secret
+`cosmos-key`; the container sees `COSMOS_KEY=secretref:cosmos-key` resolved at runtime.
+`az containerapp secret list` shows names only. The value never appears in the repo, the
+image, the CLI output or the portal.
