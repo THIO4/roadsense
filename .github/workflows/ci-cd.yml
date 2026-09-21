@@ -1,0 +1,110 @@
+# RoadSense CI/CD pipeline.
+#
+#   pull request  -> test -> build (no push)                          = CI
+#   push to main  -> test -> build + push -> deploy -> smoke test     = CI + CD
+#
+# Jobs run on separate GitHub-hosted VMs; `needs:` chains them so a failed step stops
+# everything downstream - untested code can never reach the registry or Azure.
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Least privilege for the workflow's automatic GITHUB_TOKEN:
+#   contents: read   - check out the code
+#   packages: write  - push the image to GHCR (no personal access token needed)
+#   id-token: write  - request an OIDC token to authenticate to Azure (no password anywhere)
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  IMAGE: ghcr.io/thio4/roadsense
+  RESOURCE_GROUP: rg-roadsense
+  API_APP: roadsense-api
+  COLLECTOR_JOB: roadsense-collector
+
+jobs:
+  # ---------------------------------------------------------------- CI: lint + tests
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # same version as the Docker image
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      # No COSMOS_* env vars here, so the Cosmos integration test skips itself:
+      # CI stays offline, deterministic and secret-free.
+      - run: pytest -v
+
+  # ---------------------------------------------------------------- CI: build (CD: push)
+  build:
+    needs: test
+    runs-on: ubuntu-latest   # amd64 - the architecture Azure runs, no --platform needed
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: meta
+        # Short commit SHA as the image tag: every running container is traceable to code.
+        run: echo "tag=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}   # automatic, scoped to this run, expires after it
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          # Pull requests only prove the image builds; main pushes it.
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.meta.outputs.tag }}
+            ${{ env.IMAGE }}:latest
+          # Layer cache stored in GitHub Actions: the dependency layer is reused across runs.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ---------------------------------------------------------------- CD: deploy + verify
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v2
+        with:
+          # OIDC federation: GitHub's signed token is exchanged for an Azure token for the
+          # managed identity `id-github-roadsense`. The three values are IDs, not secrets.
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy API and collector job
+        run: |
+          az extension add --name containerapp --upgrade --only-show-errors
+          IMG="$IMAGE:${{ needs.build.outputs.tag }}"
+          # Same image for both, so API and collector can never drift apart.
+          az containerapp update      --name "$API_APP"       --resource-group "$RESOURCE_GROUP" --image "$IMG" -o none
+          az containerapp job update  --name "$COLLECTOR_JOB" --resource-group "$RESOURCE_GROUP" --image "$IMG" -o none
+          echo "URL=https://$(az containerapp show --name "$API_APP" --resource-group "$RESOURCE_GROUP" \
+            --query properties.configuration.ingress.fqdn -o tsv)" >> "$GITHUB_ENV"
+
+      - name: Smoke test
+        # A deployment is not "done" until the live service answers. Retry: the new revision
+        # needs a few seconds to start (and the app may be scaled to zero).
+        run: |
+          for i in $(seq 1 12); do
+            if curl -fsS "$URL/health" | grep -q '"ok"'; then
+              echo "healthy: $URL"; exit 0
+            fi
+            sleep 5
+          done
+          echo "smoke test failed"; exit 1
