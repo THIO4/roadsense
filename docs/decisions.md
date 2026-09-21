@@ -126,3 +126,26 @@ The Cosmos key is read from Azure at deploy time and stored as the Container App
 `cosmos-key`; the container sees `COSMOS_KEY=secretref:cosmos-key` resolved at runtime.
 `az containerapp secret list` shows names only. The value never appears in the repo, the
 image, the CLI output or the portal.
+
+## D22 - CI/CD: one workflow, three jobs (test -> build -> deploy)
+`.github/workflows/ci-cd.yml`. Pull requests run lint + tests + image build (no push).
+Pushes to `main` additionally push the image to GHCR tagged with the commit SHA, update the
+API app and the collector job to that tag, and smoke-test `/health` on the live URL. Jobs
+are chained with `needs:` so nothing untested can reach the registry or Azure. Observed
+timings: test 12 s, build 36 s (dependency layer from the GitHub Actions cache), deploy ~1 min.
+
+## D23 - Azure authentication from CI: OIDC federation to a managed identity, no password
+App registrations are blocked for students in the university tenant, so GitHub's identity is
+a *user-assigned managed identity* (`id-github-roadsense`) in rg-roadsense with a federated
+credential trusting GitHub's OIDC issuer for this repo's `main` branch only. Its role is
+Contributor scoped to the resource group. GitHub Secrets hold only three IDs (client, tenant,
+subscription) - no credential exists that could leak.
+Gotcha: GitHub's OIDC subject now embeds numeric IDs
+(`repo:THIO4@247644822/roadsense@1378419278:ref:refs/heads/main`); the credential must match
+that exact string.
+
+## D24 - GHCR write access for the workflow
+The package was first created by a personal token, so the repository's `GITHUB_TOKEN` had no
+write access (`permission_denied: write_package`). Fixed by granting the repo *Write* under
+the package's "Manage Actions access"; the Dockerfile's `org.opencontainers.image.source`
+label links future packages automatically.

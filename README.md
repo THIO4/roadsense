@@ -1,5 +1,7 @@
 # RoadSense Finland
 
+[![CI/CD](https://github.com/THIO4/roadsense/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/THIO4/roadsense/actions/workflows/ci-cd.yml)
+
 Cloud Engineering course project (Assignment 2: advanced pipeline with cloud client,
 CI/CD basics, containerization).
 
@@ -14,7 +16,8 @@ an official safety rating.
 ```text
 Digitraffic API -> Azure Container Apps Job (collector, cron) -> Azure Cosmos DB
                 -> Azure Container App (FastAPI + static frontend) -> browser
-GitHub -> GitHub Actions (ruff + pytest -> docker build -> GHCR -> az containerapp update)
+GitHub -> GitHub Actions: ruff + pytest -> docker build -> GHCR (ghcr.io/thio4/roadsense:<sha>)
+        -> OIDC login -> az containerapp update (api + job) -> smoke test
 ```
 
 **Live:** https://roadsense-api.gentlebush-f249f038.swedencentral.azurecontainerapps.io
