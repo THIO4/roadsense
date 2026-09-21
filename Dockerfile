@@ -9,10 +9,15 @@
 FROM python:3.12-slim AS builder
 
 WORKDIR /build
-# Dependencies first, source second: editing code does not invalidate the pip layer.
-COPY pyproject.toml README.md ./
+# Layer 1 - dependencies only. Depends on pyproject.toml alone, so this (slow, ~30 s)
+# layer is cached until a dependency changes. tomllib is in the stdlib since 3.11.
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir --prefix=/install \
+    $(python -c "import tomllib; print(' '.join(tomllib.load(open('pyproject.toml','rb'))['project']['dependencies']))")
+# Layer 2 - our own code. Changes on every commit, but installs in ~1 s (--no-deps).
+COPY README.md ./
 COPY src ./src
-RUN pip install --no-cache-dir --prefix=/install .
+RUN pip install --no-cache-dir --no-deps --prefix=/install .
 
 # ---------- stage 2: runtime --------------------------------------------------------
 FROM python:3.12-slim AS runtime
