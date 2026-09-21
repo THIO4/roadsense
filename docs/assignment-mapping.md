@@ -7,7 +7,7 @@ Updated at every milestone. Status: planned / in progress / done.
 | Pipeline | GitHub Actions: lint + test -> build -> push -> deploy | planned |
 | Continuous Integration | ruff + pytest on every push / PR | planned (tests exist locally) |
 | Automated testing | 30 pytest tests: parser, HTTP client (MockTransport), repository, index, API (TestClient); 1 opt-in Cosmos integration test | done |
-| Containerization | Multi-stage Dockerfile; Docker Compose for local dev | planned |
+| Containerization | Multi-stage Dockerfile (non-root, .dockerignore), one image for API + collector; Compose for local dev (D16, D17) | done |
 | Container registry | GitHub Container Registry, images tagged by git SHA | planned |
 | Continuous Deployment | `az containerapp update` from Actions on `main` | planned |
 | Cloud client / SDK | `azure-cosmos` SDK in `db/cosmos.py` (collector + API); `az` CLI in `infra/` and pipeline | done (collector) |

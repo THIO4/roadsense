@@ -33,6 +33,13 @@ python -m roadsense.collector collect             # observations -> Cosmos
 uvicorn roadsense.api.app:app --reload            # API at http://127.0.0.1:8000/docs
 ```
 
+## Docker
+
+```bash
+docker compose up --build            # API + frontend at http://localhost:8000 (uses .env)
+docker compose run --rm collector    # one collection run with the same image
+```
+
 ## Project layout
 
 ```text
@@ -53,6 +60,8 @@ src/roadsense/
     schemas.py         response models (public API contract)
   static/              frontend: index.html, app.js, style.css (served at /)
 infra/                 azure-setup.sh - creates the cloud resources with the az CLI
+Dockerfile             multi-stage build, non-root user; one image for API and collector
+compose.yaml           local dev: api service + on-demand collector
 tests/                 pytest; fixtures/ holds real API samples so tests never hit the network
 docs/                  decisions, assignment mapping, cleanup checklist
 ```

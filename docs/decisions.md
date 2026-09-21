@@ -86,3 +86,17 @@ One container and one URL; same origin as the API so no CORS. Leaflet + OpenStre
 (free, no key) for the map. Status colours from an accessibility-checked palette, and the band
 *word* is always shown next to the score - colour never carries meaning alone. Package data is
 declared in pyproject so the files ship inside the installed package (and the Docker image).
+
+## D16 - One image, two roles; multi-stage; non-root
+A single Dockerfile builds one image used for both the API (default CMD: uvicorn) and the
+collector (command override: `python -m roadsense.collector collect`). Multi-stage build
+keeps pip caches/build tools out of the runtime image (273 MB, mostly the python:3.12-slim
+base). The process runs as user `app` (uid 1000), not root. `.dockerignore` excludes `.env`,
+`.venv`, `.git`, tests and docs - verified: no `.env` inside the image, no secret in image env.
+Python is pinned to 3.12 in the image (all deps ship wheels for it) even though the laptop
+runs 3.14 - the image, not the host, decides the runtime.
+
+## D17 - Docker Compose for local dev only
+`compose.yaml` runs the API with `.env` and exposes a `collector` service under the `tools`
+profile for on-demand runs. There is no local database service (see D8); both services talk
+to the free-tier Cosmos account. Compose is a developer convenience, not used in Azure.

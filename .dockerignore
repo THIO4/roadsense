@@ -1,0 +1,16 @@
+# Keep the build context small and - above all - keep secrets and local junk out of the image.
+.env
+.venv
+.git
+.github
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+*.egg-info
+tests
+docs
+infra
+.vscode
+.idea
+.DS_Store
