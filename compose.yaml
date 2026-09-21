@@ -15,5 +15,5 @@ services:
     image: roadsense:local   # reuse the image built by `api`
     build: .
     env_file: .env
-    command: python -m roadsense.collector collect
+    command: roadsense-collector collect
     profiles: ["tools"]      # not started by `docker compose up`; run on demand

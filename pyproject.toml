@@ -15,6 +15,11 @@ dependencies = [
     "uvicorn[standard]>=0.30", # ASGI server that runs the FastAPI app
 ]
 
+[project.scripts]
+# Installs a `roadsense-collector` executable: cleaner than `python -m ...` for schedulers
+# and avoids CLI tools mis-parsing "-m" as their own option (az containerapp job create).
+roadsense-collector = "roadsense.collector.__main__:main"
+
 [project.optional-dependencies]
 # Dev-only tools. Installed with:  pip install -e ".[dev]"
 # They are NOT installed in the production Docker image.

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # RoadSense image. One image, two roles:
 #   API (default):  docker run -p 8000:8000 --env-file .env roadsense
-#   collector:      docker run --env-file .env roadsense python -m roadsense.collector collect
+#   collector:      docker run --env-file .env roadsense roadsense-collector collect
 
 # ---------- stage 1: build ----------------------------------------------------------
 # Installs the package and its runtime deps into an isolated prefix. Build tools and pip
